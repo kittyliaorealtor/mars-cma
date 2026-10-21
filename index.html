@@ -212,6 +212,33 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 .cnote p{margin:0;font-size:12.5px;line-height:1.5;color:#33322F;white-space:pre-wrap}
 
 /* pricing */
+.range{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 0 2px;text-align:center}
+.range span{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+.range b{font-family:var(--display);font-weight:500;font-size:36px;letter-spacing:-.02em;line-height:1.05}
+.range b i{font-style:normal;color:var(--gold);font-weight:400;margin:0 12px}
+.range em{font-style:normal;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray)}
+.range em strong{color:var(--ink);font-weight:600;letter-spacing:.04em;font-size:14px;margin-left:6px}
+.pline{position:relative;margin-top:4px}
+.pline .base{position:absolute;left:0;right:0;bottom:0;height:1.5px;background:var(--ink)}
+.pline .rng{position:absolute;top:-6px;bottom:0;background:rgba(176,141,87,.18);border-left:1px solid var(--gold);border-right:1px solid var(--gold)}
+.pline .grid{position:absolute;top:-6px;bottom:0;width:1px;background:var(--mist)}
+.pline .recl{position:absolute;top:-10px;bottom:0;width:0;border-left:1.5px dashed var(--ink)}
+.pline .pt{position:absolute;width:11px;height:11px;margin-left:-5.5px;border-radius:50%}
+.pline .pt.sold{background:var(--ink)}
+.pline .pt.pending{background:var(--gold)}
+.pline .pt.active{background:#fff;border:1.5px solid var(--ink)}
+.axis{position:relative;height:30px;margin-top:8px}
+.axis span{position:absolute;top:0;transform:translateX(-50%);font-size:12px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;display:flex;flex-direction:column;gap:3px}
+.axis span small{font-size:9px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--gray)}
+.axis span.lo{left:0;transform:none}
+.axis span.hi{right:0;transform:none;text-align:right;align-items:flex-end}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray);margin-top:4px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.legend i.rng{border-radius:0;background:rgba(176,141,87,.3);border:1px solid var(--gold)}
+.h4{margin:0 0 8px;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.strat{border-left:2px solid var(--gold);padding:1px 0 1px 14px;margin-top:-4px}
+.strat b{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.strat p{margin:0;font-size:12px;line-height:1.5;color:#33322F;white-space:pre-wrap}
 .prices{display:grid;grid-template-columns:1fr 1.25fr 1fr;border:1px solid var(--mist)}
 .prices div{padding:26px 18px;text-align:center;display:flex;flex-direction:column;gap:10px}
 .prices div+div{border-left:1px solid var(--mist)}
@@ -221,11 +248,11 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 .prices .rec span{color:var(--gold)}
 .prices .rec b{font-size:38px}
 .notes{font-size:13.5px;line-height:1.65;color:#33322F;margin:0;white-space:pre-wrap}
-.agent{background:var(--ink);color:#fff;padding:26px 28px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
-.agent .nm{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.01em;margin:6px 0 4px}
+.agent{background:var(--ink);color:#fff;padding:18px 24px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.agent .nm{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.01em;margin:4px 0 3px}
 .agent .ttl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#CFCBC3}
 .agent .ct{display:flex;flex-direction:column;gap:6px;text-align:right;font-size:12.5px;color:#E8E5DF}
-.agent img{max-height:64px;max-width:160px}
+.agent img{max-height:48px;max-width:140px}
 .empty{color:#B9B5AD}
 
 @media (prefers-reduced-motion:no-preference){ .pagewrap{transition:width .15s,height .15s} }
@@ -280,7 +307,7 @@ function blankReport(agent){
       source:'Source: OneKey MLS · Single-Family Residences · As of '+todayLong(),footnote:''},
     titles:{sold:'Closed in the Last 180 Days',pending:'Under Contract',active:'Currently On the Market'},
     comps:[blankComp('sold'),blankComp('pending'),blankComp('active')],
-    pricing:{show:true,low:'',rec:'',high:'',notes:''}
+    pricing:{show:true,low:'',rec:'',high:'',notes:'',strategies:[{title:'',detail:''}]}
   };
 }
 function exampleReport(){
@@ -306,7 +333,11 @@ function exampleReport(){
     c('active','30 Mockup Avenue','','989000','','4','3','2700','1.00 ac','6','2-car att.','18120','Colonial','1972'),
     Object.assign(c('active','118 Example Hollow','','849000','','3','2','2050','0.55 ac','27','None','14050','Ranch','1957'),{notes:'Original 1957 kitchen. On a busy through street.'})
   ];
-  r.pricing={show:true,low:'$899,000',rec:'$929,000',high:'$959,000',notes:'The four closed sales that best match this home sold between $861,000 and $1,015,000, at a median of 101% of list price. The carriage house, pool and horse rights set this property apart from most of the active inventory.\n\nA list price of $929,000 positions the home just above the closest pending sale, leaves room for multiple offers in a market where homes go under contract in about three weeks, and is supported by the most recent comparable closing at $925,000.'};
+  r.pricing={show:true,low:'$899,000',rec:'',high:'$959,000',strategies:[
+    {title:'Low end of the range',detail:'Priced near $899,000 to draw the most buyers and the best chance of multiple offers in the first weekend. Best if you want speed and a competitive bidding situation.'},
+    {title:'Middle of the range',detail:'Priced near $929,000, just above the closest pending sale. Balances buyer interest with room to negotiate, and is supported by the most recent closing at $925,000.'},
+    {title:'High end of the range',detail:'Priced near $959,000 to test the market for the carriage house and horse rights. Expect a longer time on market and plan a price review after two to three weeks.'}],
+  notes:'The four closed sales that best match this home sold between $861,000 and $1,015,000, at a median of 101% of list price. The carriage house, pool and horse rights set this property apart from most of the active inventory, which supports a range of $899,000 to $959,000.'};
   return r;
 }
 function monthNow(){return new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});}
@@ -414,10 +445,14 @@ function renderForm(){
       <button type="button" class="btn btn-line btn-small" id="csvTemplate">Get a blank spreadsheet</button></div>
       <label class="toggle"><input type="checkbox" id="csvReplace"> Replace the comps already here</label>
       ${importMsg}</div>`+groups,openSecs.has('comps'))+
-   sec('pricing','Pricing','Recommended range and notes',
+   sec('pricing','Pricing','Price range, chart and strategies',
      `<label class="toggle"><input type="checkbox" data-check="pricing.show" ${S.pricing.show?'checked':''}> Include this page</label>`+
-     `<div class="grid3">${inp('pricing.low','Low')}${inp('pricing.rec','Recommended')}${inp('pricing.high','High')}</div>`+
-     inp('pricing.notes','How you got there',{area:true,ph:'Which comps matter most and why'}),openSecs.has('pricing'))+
+     `<div class="grid2">${inp('pricing.low','Low end of range')}${inp('pricing.high','High end of range')}</div>`+
+     inp('pricing.rec','Exact list price (optional)',{ph:'Leave blank to show only the range'})+
+     `<p class="hint">The chart plots every comp with an address and price, and shades your range.</p>`+
+     inp('pricing.notes','How you got there',{area:true,ph:'Which comps matter most and why'})+
+     `<span class="lbl">Pricing strategies</span><div class="rep">${(S.pricing.strategies||[]).map((x,i)=>`<div class="importbox" style="border-style:solid;border-color:var(--ui-line)"><div class="row hl"><input aria-label="Strategy name" data-k="pricing.strategies.${i}.title" value="${esc(x.title)}" placeholder="Strategy name, e.g. Low end of the range"><button type="button" class="x" aria-label="Remove strategy" data-del="pricing.strategies" data-i="${i}">×</button></div><div class="field"><textarea aria-label="Strategy details" data-k="pricing.strategies.${i}.detail" placeholder="What this strategy means for the seller">${esc(x.detail)}</textarea></div></div>`).join('')}</div>
+     <button type="button" class="btn btn-line btn-small" data-add="strat">Add a strategy</button>`,openSecs.has('pricing'))+
    sec('agent','Agent & branding','Saved on this device',
      `<p class="hint">These stay filled in when you start a new CMA.</p>`+
      inp('agent.name','Agent name')+inp('agent.title','Title')+
@@ -450,6 +485,7 @@ form.addEventListener('click',e=>{
   if(d.del){getP(d.del).splice(+d.i,1);changed(true);}
   else if(d.add==='spec'){S.subject.specs.push({label:'',value:''});changed(true);}
   else if(d.add==='hl'){S.subject.highlights.push('');changed(true);}
+  else if(d.add==='strat'){(S.pricing.strategies=S.pricing.strategies||[]).push({title:'',detail:''});changed(true);}
   else if(d.add==='mk'){S.market.rows.push({label:'',a:'',b:''});changed(true);}
   else if(d.clearphoto){setP(d.clearphoto,'');changed(true);}
   else if(d.addcomp){const c=blankComp(d.addcomp);S.comps.push(c);openComps.add(c.id);openSecs.add('comps');changed(true);setTimeout(()=>{const el=document.querySelector(`details.comp[data-id="${c.id}"] input`);el&&el.focus();},30);}
@@ -565,6 +601,28 @@ function compCard(c){
       ${f('Garage',show(c.pool))}${f('Taxes',show(c.taxes,taxes))}${f('Style',show(c.style))}${f('Year built',show(c.year))}</div>
     ${c.notes&&c.notes.trim()?`<div class="cnote"><span>Additional notes</span><p>${esc(c.notes.trim())}</p></div>`:''}</div></div>`;
 }
+function priceChart(p){
+  const n=v=>parseFloat(digits(v));
+  const pts=S.comps.filter(c=>c.address||c.price||c.listPrice).map(c=>({c,v:c.status==='sold'?n(c.price||c.listPrice):n(c.listPrice)})).filter(x=>x.v>0).sort((a,b)=>a.v-b.v);
+  if(!pts.length) return '';
+  const lo=n(p.low),hi=n(p.high),rec=n(p.rec);
+  // the line runs from the lowest comp price to the highest, and nothing else
+  let mn=pts[0].v,mx=pts[pts.length-1].v; const one=mx===mn; if(one){mn-=1;mx+=1;}
+  const cl=v=>Math.min(mx,Math.max(mn,v));
+  const W=704, px=v=>(v-mn)/(mx-mn)*W, x=v=>((cl(v)-mn)/(mx-mn)*100).toFixed(2)+'%';
+  const $=v=>esc(money(String(Math.round(v))));
+  // stack dots that would overlap, one small step above the line per collision
+  const lanes=[]; pts.forEach(pt=>{const X=px(pt.v);let l=0;while(lanes[l]!=null&&X-lanes[l]<13) l++;lanes[l]=X;pt.lane=l;});
+  const LH=12, H=Math.max(1,lanes.length)*LH+10;
+  const grid='';
+  const ticks=one?`<span style="left:50%">${$(pts[0].v)}</span>`:`<span class="lo">${$(pts[0].v)}<small>Lowest comp</small></span><span class="hi">${$(pts[pts.length-1].v)}<small>Highest comp</small></span>`;
+  const band=lo>0&&hi>0?`<div class="rng" style="left:${x(Math.min(lo,hi))};width:calc(${x(Math.max(lo,hi))} - ${x(Math.min(lo,hi))})"></div>`:'';
+  const recl=rec>=mn&&rec<=mx&&rec>0?`<div class="recl" style="left:${x(rec)}"></div>`:'';
+  const dots=pts.map(({c,v,lane})=>`<div class="pt ${c.status}" style="left:${x(v)};bottom:${lane*LH-5}px"></div>`).join('');
+  const has=st=>pts.some(q=>q.c.status===st);
+  return `<div><div class="pline" style="height:${H}px">${grid}${band}${recl}<div class="base"></div>${dots}</div><div class="axis">${ticks}</div>
+    <div class="legend">${has('sold')?'<span><i style="background:var(--ink)"></i>Sold</span>':''}${has('pending')?'<span><i style="background:var(--gold)"></i>Pending</span>':''}${has('active')?'<span><i style="background:#fff;border:1.5px solid var(--ink)"></i>Active</span>':''}${band?'<span><i class="rng"></i>Suggested range</span>':''}${recl?'<span><i style="width:12px;height:0;border-radius:0;border-top:1.5px dashed var(--ink);vertical-align:3px"></i>Recommended</span>':''}</div></div>`;
+}
 function renderPages(){
   root.innerHTML='';
   coverPage();
@@ -589,8 +647,12 @@ function renderPages(){
   flow('Active Inventory',S.titles.active,by('active').map(compCard));
   const p=S.pricing,a=S.agent;
   if(p.show){
-    const blocks=[`<div class="prices"><div><span>Low</span><b>${show(p.low,money)}</b></div><div class="rec"><span>Recommended list price</span><b>${show(p.rec,money)}</b></div><div><span>High</span><b>${show(p.high,money)}</b></div></div>`];
-    if(p.notes) p.notes.split(/\n\s*\n/).forEach(par=>blocks.push(`<p class="notes">${esc(par.trim())}</p>`));
+    const blocks=[`<div class="range"><span>Suggested price range</span><b>${show(p.low,money)}<i>–</i>${show(p.high,money)}</b>${p.rec?`<em>Recommended list price<strong>${esc(money(p.rec))}</strong></em>`:''}</div>`];
+    const chart=priceChart(p); if(chart) blocks.push(chart);
+    const pars=(p.notes||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+    pars.forEach((par,i)=>blocks.push(`<div>${i?'':'<div class="h4">How we arrived at this range</div>'}<p class="notes">${esc(par)}</p></div>`));
+    const strats=(p.strategies||[]).filter(x=>x.title||x.detail);
+    strats.forEach((x,i)=>blocks.push(`<div>${i?'':'<div class="h4">Pricing strategies</div>'}<div class="strat">${x.title?`<b>${esc(x.title)}</b>`:''}${x.detail?`<p>${esc(x.detail)}</p>`:''}</div></div>`));
     blocks.push(`<div class="agent"><div><div class="eyebrow">Your agent</div><div class="nm">${esc(a.name)}</div><div class="ttl">${esc(a.title)}</div></div>
       <div class="ct">${LOGO?`<img src="${LOGO}" alt="" style="align-self:flex-end">`:''}${a.phone?`<div>${esc(a.phone)}</div>`:''}${a.email?`<div>${esc(a.email)}</div>`:''}<div>${esc([a.team,a.brokerage].filter(Boolean).join(' · '))}</div>${a.office?`<div>${esc(a.office)}</div>`:''}</div></div>`);
     flow('Pricing Strategy','Where this home should be priced',blocks);
