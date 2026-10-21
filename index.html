@@ -258,7 +258,7 @@ let uid=0; const nid=()=>'c'+Date.now().toString(36)+(uid++);
 
 /* ---------- Data ---------- */
 function blankComp(status){return {id:nid(),status:status||'sold',address:'',town:'',district:'',closeDate:'',listPrice:'',price:'',beds:'',baths:'',sqft:'',lot:'',dom:'',pool:'',taxes:'',style:'',year:''};}
-function defaultAgent(){return {name:'Kitty Liao',title:'NYS Licensed Real Estate Salesperson',team:'The MARS Team',brokerage:'Epique Realty',phone:'',email:'',office:'400 Garden City Plaza, Suite 438, Garden City, NY 11530',logo:''};}
+function defaultAgent(){return {name:'Kitty Liao',title:'NYS Licensed Real Estate Salesperson',team:'The MARS Team',brokerage:'Epique Realty',phone:'',email:'',office:'1177 6th Ave, New York, NY 10036',logo:''};}
 function blankReport(agent){
   return {
     example:false,
@@ -271,7 +271,7 @@ function blankReport(agent){
       rows:['Sold — Last 180 Days','Active Inventory','Median Days on Market','Average Sale Price','Median Sale Price','Avg Home Size (Sold)','Avg Home Size (Active)'].map(l=>({label:l,a:'',b:''})),
       source:'Source: OneKey MLS · Single-Family Residences · As of '+todayLong(),footnote:''},
     titles:{sold:'Closed in the Last 180 Days',pending:'Under Contract',active:'Currently On the Market'},
-    comps:[],
+    comps:[blankComp('sold'),blankComp('pending'),blankComp('active')],
     pricing:{show:true,low:'',rec:'',high:'',notes:''}
   };
 }
@@ -289,14 +289,14 @@ function exampleReport(){
   r.market.footnote='Average days on market is skewed by a 560-day outlier listing. The median (19 days) reflects the typical pace.';
   const c=(status,address,closeDate,listPrice,price,beds,baths,sqft,lot,dom,pool,taxes,style,year)=>Object.assign(blankComp(status),{address,town:'Smithtown',district:'Smithtown CSD',closeDate,listPrice,price,beds,baths,sqft,lot,dom,pool,taxes,style,year});
   r.comps=[
-    c('sold','12 Sample Lane','2026-09-18','899000','925000','4','2.5','2380','0.75 ac','14','Yes','16210','Colonial','1958'),
-    c('sold','7 Example Drive','2026-08-02','949000','940000','4','3','2610','1.02 ac','31','Yes','17940','Colonial','1949'),
-    c('sold','203 Specimen Road','2026-06-27','829000','861000','3','2','2120','0.50 ac','9','No','14320','Cape','1955'),
-    c('sold','91 Template Way','2026-05-11','1050000','1015000','5','3','2890','1.10 ac','47','Yes','19260','Post-Modern','1987'),
-    c('pending','5 Placeholder Path','','925000','','4','2.5','2400','0.80 ac','12','Yes','16700','Colonial','1961'),
-    c('pending','66 Demo Court','','879000','','4','2','2250','0.62 ac','20','No','15480','Split Level','1964'),
-    c('active','30 Mockup Avenue','','989000','','4','3','2700','1.00 ac','6','Yes','18120','Colonial','1972'),
-    c('active','118 Example Hollow','','849000','','3','2','2050','0.55 ac','27','No','14050','Ranch','1957')
+    c('sold','12 Sample Lane','2026-09-18','899000','925000','4','2.5','2380','0.75 ac','14','2-car att.','16210','Colonial','1958'),
+    c('sold','7 Example Drive','2026-08-02','949000','940000','4','3','2610','1.02 ac','31','2-car det.','17940','Colonial','1949'),
+    c('sold','203 Specimen Road','2026-06-27','829000','861000','3','2','2120','0.50 ac','9','1-car att.','14320','Cape','1955'),
+    c('sold','91 Template Way','2026-05-11','1050000','1015000','5','3','2890','1.10 ac','47','3-car att.','19260','Post-Modern','1987'),
+    c('pending','5 Placeholder Path','','925000','','4','2.5','2400','0.80 ac','12','2-car det.','16700','Colonial','1961'),
+    c('pending','66 Demo Court','','879000','','4','2','2250','0.62 ac','20','1-car att.','15480','Split Level','1964'),
+    c('active','30 Mockup Avenue','','989000','','4','3','2700','1.00 ac','6','2-car att.','18120','Colonial','1972'),
+    c('active','118 Example Hollow','','849000','','3','2','2050','0.55 ac','27','None','14050','Ranch','1957')
   ];
   r.pricing={show:true,low:'$899,000',rec:'$929,000',high:'$959,000',notes:'The four closed sales that best match this home sold between $861,000 and $1,015,000, at a median of 101% of list price. The carriage house, pool and horse rights set this property apart from most of the active inventory.\n\nA list price of $929,000 positions the home just above the closest pending sale, leaves room for multiple offers in a market where homes go under contract in about three weeks, and is supported by the most recent comparable closing at $925,000.'};
   return r;
@@ -306,7 +306,7 @@ function todayLong(){return new Date().toLocaleDateString('en-US',{month:'long',
 
 let S;
 try{const raw=localStorage.getItem(KEY); if(raw) S=JSON.parse(raw);}catch(e){}
-if(!S||!S.cover) S=exampleReport();
+if(!S||!S.cover) S=blankReport();
 
 /* ---------- Formatting ---------- */
 const digits=v=>String(v==null?'':v).replace(/[^0-9.]/g,'');
@@ -350,7 +350,7 @@ function photoField(path,label){
 }
 function sec(id,title,sub,body,open){return `<details class="sec" id="sec_${id}" ${open?'open':''}><summary><h2>${title}</h2><small>${sub}</small></summary><div class="secbody">${body}</div></details>`;}
 
-const COMP_FIELDS=[['address','Address'],['town','Town'],['district','School district'],['closeDate','Closed date','date'],['listPrice','List price','',"numeric"],['price','Sold price','',"numeric"],['beds','Beds','',"numeric"],['baths','Baths'],['sqft','Living area (sq ft)','',"numeric"],['lot','Lot size'],['dom','Days on market','',"numeric"],['pool','Pool'],['taxes','Annual taxes','',"numeric"],['style','Style'],['year','Year built','',"numeric"]];
+const COMP_FIELDS=[['address','Address'],['town','Town'],['district','School district'],['closeDate','Closed date','date'],['listPrice','List price','',"numeric"],['price','Sold price','',"numeric"],['beds','Beds','',"numeric"],['baths','Baths'],['sqft','Living area (sq ft)','',"numeric"],['lot','Lot size'],['dom','Days on market','',"numeric"],['pool','Garage'],['taxes','Annual taxes','',"numeric"],['style','Style'],['year','Year built','',"numeric"]];
 function compForm(c,i){
   const f=COMP_FIELDS.filter(([k])=>c.status==='sold'||(k!=='price'&&k!=='closeDate'));
   const price=c.status==='sold'?money(c.price):money(c.listPrice);
@@ -363,7 +363,7 @@ function compForm(c,i){
     <div class="comptools"><button type="button" class="btn btn-line btn-small" data-move="${i}" data-dir="-1">Move up</button><button type="button" class="btn btn-line btn-small" data-move="${i}" data-dir="1">Move down</button><button type="button" class="btn btn-line btn-small" data-dup="${i}">Duplicate</button><button type="button" class="btn btn-line btn-small btn-danger" data-delcomp="${i}">${pendingDelete===c.id?'Click again to delete':'Delete'}</button></div>
   </div></details>`;
 }
-const openSecs=new Set(['cover']); const openComps=new Set(); let pendingDelete=null,importMsg='';
+const openSecs=new Set(['cover']); const openComps=new Set(S.comps.filter(c=>!c.address).map(c=>c.id)); let pendingDelete=null,importMsg='';
 function renderForm(){
   document.querySelectorAll('details.sec').forEach(d=>{const k=d.id.slice(4); d.open?openSecs.add(k):openSecs.delete(k);});
   document.querySelectorAll('details.comp').forEach(d=>{d.open?openComps.add(d.dataset.id):openComps.delete(d.dataset.id);});
@@ -375,7 +375,8 @@ function renderForm(){
     return `<div class="compgroup"><h3>${name} · ${items.length}<button type="button" class="btn btn-line btn-small" data-addcomp="${st}">Add ${name.toLowerCase()}</button></h3>
       ${inp('titles.'+st,'Page heading')}${items.map(([c,i])=>compForm(c,i)).join('')}</div>`;}).join('');
   $('#form').innerHTML=
-   (S.example?`<div class="notice"><p>You're looking at <b>example data</b> so you can see a finished report. Start a new CMA to clear it. Your agent details stay.</p></div>`:'')+
+   (S.example?`<div class="notice"><p>You're looking at <b>example data</b> so you can see a finished report. Start a new CMA to clear it. Your agent details stay.</p></div>`
+  :`<div class="notice"><p>New to the builder? See a finished example report first.</p><button type="button" class="btn btn-line btn-small" data-example="1">Show example</button></div>`)+
    sec('cover','Cover','Address, client, date',
      inp('cover.address','Street address',{ph:'48 Sample Court'})+
      `<div class="grid3">${inp('cover.town','Town')}${inp('cover.state','State')}${inp('cover.zip','Zip',{mode:'numeric'})}</div>`+
@@ -445,6 +446,7 @@ form.addEventListener('click',e=>{
   else if(d.move){const i=+d.move,st=S.comps[i].status;const same=S.comps.map((c,j)=>[c,j]).filter(([c])=>c.status===st).map(x=>x[1]);const p=same.indexOf(i)+(+d.dir); if(p<0||p>=same.length) return; const j=same[p];[S.comps[i],S.comps[j]]=[S.comps[j],S.comps[i]];changed(true);}
   else if(d.dup){const c=Object.assign({},S.comps[+d.dup],{id:nid(),address:S.comps[+d.dup].address+' (copy)'});S.comps.splice(+d.dup+1,0,c);openComps.add(c.id);changed(true);}
   else if(d.delcomp){const c=S.comps[+d.delcomp]; if(pendingDelete===c.id){S.comps.splice(+d.delcomp,1);pendingDelete=null;changed(true);} else {pendingDelete=c.id;renderForm();setTimeout(()=>{if(pendingDelete===c.id){pendingDelete=null;renderForm();}},3500);}}
+  else if(d.example){const agent=S.agent;S=exampleReport();S.agent=agent;openSecs.add('cover');changed(true);toast('Example loaded. Click Start new CMA when you’re ready to make a real one.');}
   else if(b.id==='csvTemplate') saveTemplate();
 });
 
@@ -465,7 +467,7 @@ const MAP={
   sqft:['livingarea','sqft','approxsqft','approximatesqft','squarefeet','buildingareatotal','livingareasqft','sqftliving'],
   lot:['lotsizesquarefeet','lotsize','lotsizearea','lotsqft','lotsizeacres','acres','lotsizedimensions'],
   dom:['dom','daysonmarket','cdom','cumulativedaysonmarket'],
-  pool:['pool','poolprivateyn','poolfeatures','poolyn'],
+  pool:['garagespaces','garage','garagetype','garageyn','attachedgarageyn','parkingfeatures','parking'],
   taxes:['taxannualamount','taxes','annualtaxes','totaltaxes','taxamount','realestatetaxes','tax'],
   style:['architecturalstyle','style','homestyle'],
   year:['yearbuilt','yrbuilt','builtyear'],
@@ -490,13 +492,13 @@ function importCsv(file,replace){
       else status=g('price')?'sold':'active';
       let baths=g('baths'); if(!baths&&full){const f=+(row[full]||0),h=+(row[half]||0); baths=h?`${f} full · ${h} half`:String(f||'');}
       let lotv=g('lot'); if(lotv&&col.lot&&/acre/i.test(col.lot)&&/^[\d.]+$/.test(lotv)) lotv=lotv+' ac';
-      let pool=g('pool'); if(/^(true|yes|y|1)$/i.test(pool)) pool='Yes'; else if(/^(false|no|n|0)$/i.test(pool)) pool='No';
+      let pool=g('pool'); if(/^(true|yes|y)$/i.test(pool)) pool='Yes'; else if(/^(false|no|n|0)$/i.test(pool)) pool='None'; else if(/^\d+(\.\d+)?$/.test(pool)) pool=(+pool)+'-car';
       added.push(Object.assign(blankComp(status),{address,town:g('town'),district:g('district'),closeDate:isoDate(g('closeDate'))||g('closeDate'),
         listPrice:digits(g('listPrice'))||g('listPrice'),price:digits(g('price'))||g('price'),beds:g('beds'),baths,sqft:digits(g('sqft'))||g('sqft'),
         lot:lotv,dom:g('dom'),pool,taxes:digits(g('taxes'))||g('taxes'),style:g('style'),year:g('year')}));
     }
     if(!added.length){importMsg=`<p class="result bad">No homes could be read from that file. Make sure the first row holds the column names.</p>`;renderForm();return;}
-    if(replace) S.comps=[]; S.comps.push(...added); S.example=false;
+    S.comps=replace?[]:S.comps.filter(c=>c.address||c.price||c.listPrice); S.comps.push(...added); S.example=false;
     const n=st=>added.filter(c=>c.status===st).length;
     const missing=['price','closeDate','sqft','dom','taxes'].filter(k=>!col[k]).map(k=>({price:'sold price',closeDate:'closed date',sqft:'living area',dom:'days on market',taxes:'taxes'}[k]));
     importMsg=`<p class="result ok">Imported ${added.length} homes: ${n('sold')} sold, ${n('pending')} pending, ${n('active')} active.${skipped?` Skipped ${skipped} rows that were blank, expired or withdrawn.`:''}</p>`+
@@ -549,7 +551,7 @@ function compCard(c){
       <div class="csub">${esc(sub)||'&nbsp;'}</div></div>
     <div class="cprice">${price?esc(price):'<span class="empty">$—</span>'}<small>${sold?'Sold price':'List price'}</small></div></div>
     <div class="cgrid">${f('Beds / Baths',(c.beds||c.baths)?esc((c.beds||'—')+' / '+(c.baths||'—')):'<span class="empty">—</span>')}${f('Living area',show(c.sqft,sqft))}${f('Lot',show(c.lot,lot))}${f('Days on market',show(c.dom,days))}
-      ${f('Pool',show(c.pool))}${f('Taxes',show(c.taxes,taxes))}${f('Style',show(c.style))}${f('Year built',show(c.year))}</div></div>`;
+      ${f('Garage',show(c.pool))}${f('Taxes',show(c.taxes,taxes))}${f('Style',show(c.style))}${f('Year built',show(c.year))}</div></div>`;
 }
 function renderPages(){
   root.innerHTML='';
@@ -567,7 +569,8 @@ function renderPages(){
     if(m.source||m.footnote) blocks.push(`<div style="display:flex;flex-direction:column;gap:8px">${m.footnote?`<p class="mnote"><i>* ${esc(m.footnote)}</i></p>`:''}${m.source?`<p class="mnote">${esc(m.source)}</p>`:''}</div>`);
     flow(m.eyebrow||'Neighborhood Overview',m.title||'Market Snapshot',blocks);
   }
-  const by=st=>S.comps.filter(c=>c.status===st);
+  const filled=c=>c.address||c.price||c.listPrice;
+  const by=st=>S.comps.filter(c=>c.status===st&&filled(c));
   const sold=by('sold').slice().sort((a,b)=>(parseDate(b.closeDate)||0)-(parseDate(a.closeDate)||0));
   flow('Sold',S.titles.sold,sold.map(compCard));
   flow('Pending',S.titles.pending,by('pending').map(compCard));
@@ -618,7 +621,7 @@ $('#saveDraft').addEventListener('click',()=>offer(`CMA draft - ${safeName(S.cov
 $('#openDraft').addEventListener('click',()=>$('#draftFile').click());
 $('#draftFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.cover||!d.comps) throw 0;S=d;importMsg='';changed(true);toast('Opened '+f.name);}catch(err){toast('That file is not a CMA draft from this builder.');}};r.readAsText(f);e.target.value='';});
 function saveTemplate(){
-  const h='Status,Address,Town,School District,Close Date,List Price,Sold Price,Beds,Baths,Living Area,Lot Size,DOM,Pool,Taxes,Style,Year Built\n';
+  const h='Status,Address,Town,School District,Close Date,List Price,Sold Price,Beds,Baths,Living Area,Lot Size,DOM,Garage,Taxes,Style,Year Built\n';
   offer('CMA comps template.csv',h+'Sold,,,,,,,,,,,,,,,\nPending,,,,,,,,,,,,,,,\nActive,,,,,,,,,,,,,,,\n');
 }
 let confirmNew=false;
@@ -626,7 +629,7 @@ $('#newCma').addEventListener('click',()=>{
   const b=$('#newCma');
   if(!confirmNew){confirmNew=true;b.textContent='Click again to clear';setTimeout(()=>{confirmNew=false;b.textContent='Start new CMA';},3500);return;}
   confirmNew=false;b.textContent='Start new CMA';
-  const agent=S.agent; S=blankReport(agent); importMsg=''; openSecs.clear(); openSecs.add('cover'); openComps.clear(); changed(true); $('#form').scrollTop=0; toast('New CMA started. Your agent details were kept.');
+  const agent=S.agent; S=blankReport(agent); importMsg=''; openSecs.clear(); openSecs.add('cover'); openComps.clear(); S.comps.forEach(c=>openComps.add(c.id)); changed(true); $('#form').scrollTop=0; toast('New CMA started. Your agent details were kept.');
 });
 
 renderForm();
