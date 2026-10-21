@@ -143,20 +143,20 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 
 /* cover */
 .cover{background:var(--ink);color:#fff}
-.cover .photo-bg{position:absolute;left:0;right:0;top:0;height:640px;background-size:cover;background-position:center}
-.cover .photo-fade{position:absolute;left:0;right:0;top:0;height:640px;background:linear-gradient(180deg,rgba(15,15,14,.15) 0%,rgba(15,15,14,.35) 55%,#0F0F0E 100%)}
+.cover .photo-bg{position:absolute;left:0;right:0;top:0;height:860px;background-size:cover;background-position:center}
+.cover .photo-fade{position:absolute;left:0;right:0;top:0;height:862px;background:linear-gradient(180deg,rgba(15,15,14,.45) 0%,rgba(15,15,14,0) 16%,rgba(15,15,14,0) 50%,rgba(15,15,14,.55) 72%,#0F0F0E 100%)}
 .cover .frame{position:absolute;inset:28px;border:1px solid rgba(176,141,87,.7)}
-.cover .content{position:absolute;left:84px;right:84px;bottom:110px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.cover .content{position:absolute;left:84px;right:84px;bottom:96px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .cover .rule{width:64px;height:1px;background:var(--gold);margin:26px 0}
 .cover .addr{font-family:var(--display);font-weight:500;font-size:52px;line-height:1.05;letter-spacing:-.025em;margin:18px 0 10px}
 .cover .town{font-family:var(--display);font-weight:400;font-size:20px;color:#CFCBC3;letter-spacing:.01em}
 .cover .meta{display:flex;flex-direction:column;gap:9px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#CFCBC3}
 .cover .meta b{color:#fff;font-weight:500}
-.cover .mark{position:absolute;left:0;right:0;bottom:54px;display:flex;justify-content:center;align-items:center}
+.cover .mark{position:absolute;left:0;right:0;bottom:50px;display:flex;justify-content:center;align-items:center}
 .cover .mark img{max-height:42px;max-width:220px}
 .cover .mark span{font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold)}
-.cover .toplogo{position:absolute;left:0;right:0;top:74px;display:flex;justify-content:center;align-items:center;z-index:2}
-.cover .toplogo img{max-height:150px;max-width:300px}
+.cover .toplogo{position:absolute;top:58px;right:62px;display:flex;justify-content:flex-end;align-items:flex-start;z-index:2}
+.cover .toplogo img{max-height:74px;max-width:110px}
 .cover .toplogo span{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);font-weight:500}
 
 /* subject */
@@ -202,6 +202,9 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 .cgrid div{display:flex;flex-direction:column;gap:3px;min-width:0}
 .cgrid span{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray)}
 .cgrid b{font-weight:500;font-size:13.5px;font-variant-numeric:tabular-nums}
+.cnote{border-top:1px solid var(--mist);padding-top:10px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline}
+.cnote span{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+.cnote p{margin:0;font-size:12.5px;line-height:1.5;color:#33322F;white-space:pre-wrap}
 
 /* pricing */
 .prices{display:grid;grid-template-columns:1fr 1.25fr 1fr;border:1px solid var(--mist)}
@@ -257,7 +260,7 @@ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 let uid=0; const nid=()=>'c'+Date.now().toString(36)+(uid++);
 
 /* ---------- Data ---------- */
-function blankComp(status){return {id:nid(),status:status||'sold',address:'',town:'',district:'',closeDate:'',listPrice:'',price:'',beds:'',baths:'',sqft:'',lot:'',dom:'',pool:'',taxes:'',style:'',year:''};}
+function blankComp(status){return {id:nid(),status:status||'sold',address:'',town:'',district:'',closeDate:'',listPrice:'',price:'',beds:'',baths:'',sqft:'',lot:'',dom:'',pool:'',taxes:'',style:'',year:'',notes:''};}
 function defaultAgent(){return {name:'Kitty Liao',title:'NYS Licensed Real Estate Salesperson',team:'The MARS Team',brokerage:'Epique Realty',phone:'',email:'',office:'1177 6th Ave, New York, NY 10036',logo:''};}
 function blankReport(agent){
   return {
@@ -290,13 +293,13 @@ function exampleReport(){
   const c=(status,address,closeDate,listPrice,price,beds,baths,sqft,lot,dom,pool,taxes,style,year)=>Object.assign(blankComp(status),{address,town:'Smithtown',district:'Smithtown CSD',closeDate,listPrice,price,beds,baths,sqft,lot,dom,pool,taxes,style,year});
   r.comps=[
     c('sold','12 Sample Lane','2026-09-18','899000','925000','4','2.5','2380','0.75 ac','14','2-car att.','16210','Colonial','1958'),
-    c('sold','7 Example Drive','2026-08-02','949000','940000','4','3','2610','1.02 ac','31','2-car det.','17940','Colonial','1949'),
+    Object.assign(c('sold','7 Example Drive','2026-08-02','949000','940000','4','3','2610','1.02 ac','31','2-car det.','17940','Colonial','1949'),{notes:'Fully renovated kitchen and primary bath in 2024. Backs onto a commercial lot.'}),
     c('sold','203 Specimen Road','2026-06-27','829000','861000','3','2','2120','0.50 ac','9','1-car att.','14320','Cape','1955'),
     c('sold','91 Template Way','2026-05-11','1050000','1015000','5','3','2890','1.10 ac','47','3-car att.','19260','Post-Modern','1987'),
     c('pending','5 Placeholder Path','','925000','','4','2.5','2400','0.80 ac','12','2-car det.','16700','Colonial','1961'),
     c('pending','66 Demo Court','','879000','','4','2','2250','0.62 ac','20','1-car att.','15480','Split Level','1964'),
     c('active','30 Mockup Avenue','','989000','','4','3','2700','1.00 ac','6','2-car att.','18120','Colonial','1972'),
-    c('active','118 Example Hollow','','849000','','3','2','2050','0.55 ac','27','None','14050','Ranch','1957')
+    Object.assign(c('active','118 Example Hollow','','849000','','3','2','2050','0.55 ac','27','None','14050','Ranch','1957'),{notes:'Original 1957 kitchen. On a busy through street.'})
   ];
   r.pricing={show:true,low:'$899,000',rec:'$929,000',high:'$959,000',notes:'The four closed sales that best match this home sold between $861,000 and $1,015,000, at a median of 101% of list price. The carriage house, pool and horse rights set this property apart from most of the active inventory.\n\nA list price of $929,000 positions the home just above the closest pending sale, leaves room for multiple offers in a market where homes go under contract in about three weeks, and is supported by the most recent comparable closing at $925,000.'};
   return r;
@@ -360,6 +363,7 @@ function compForm(c,i){
     <div class="field"><label for="st_${c.id}">Status</label><select id="st_${c.id}" data-status="${i}">
       <option value="sold" ${c.status==='sold'?'selected':''}>Sold</option><option value="pending" ${c.status==='pending'?'selected':''}>Pending / under contract</option><option value="active" ${c.status==='active'?'selected':''}>Active</option></select></div>
     <div class="grid2">${fields}</div>
+    ${inp(`comps.${i}.notes`,'Additional notes',{area:true,ph:'Anything unique, good or bad: renovated kitchen, busy road, needs a new roof'})}
     <div class="comptools"><button type="button" class="btn btn-line btn-small" data-move="${i}" data-dir="-1">Move up</button><button type="button" class="btn btn-line btn-small" data-move="${i}" data-dir="1">Move down</button><button type="button" class="btn btn-line btn-small" data-dup="${i}">Duplicate</button><button type="button" class="btn btn-line btn-small btn-danger" data-delcomp="${i}">${pendingDelete===c.id?'Click again to delete':'Delete'}</button></div>
   </div></details>`;
 }
@@ -472,7 +476,8 @@ const MAP={
   style:['architecturalstyle','style','homestyle'],
   year:['yearbuilt','yrbuilt','builtyear'],
   town:['city','town','postalcity','municipality'],
-  district:['highschooldistrict','schooldistrict','elementaryschooldistrict','district']
+  district:['highschooldistrict','schooldistrict','elementaryschooldistrict','district'],
+  notes:['additionalnotes','notes','note','comments','agentnotes']
 };
 function importCsv(file,replace){
   Papa.parse(file,{header:true,skipEmptyLines:true,complete:res=>{
@@ -495,7 +500,7 @@ function importCsv(file,replace){
       let pool=g('pool'); if(/^(true|yes|y)$/i.test(pool)) pool='Yes'; else if(/^(false|no|n|0)$/i.test(pool)) pool='None'; else if(/^\d+(\.\d+)?$/.test(pool)) pool=(+pool)+'-car';
       added.push(Object.assign(blankComp(status),{address,town:g('town'),district:g('district'),closeDate:isoDate(g('closeDate'))||g('closeDate'),
         listPrice:digits(g('listPrice'))||g('listPrice'),price:digits(g('price'))||g('price'),beds:g('beds'),baths,sqft:digits(g('sqft'))||g('sqft'),
-        lot:lotv,dom:g('dom'),pool,taxes:digits(g('taxes'))||g('taxes'),style:g('style'),year:g('year')}));
+        lot:lotv,dom:g('dom'),pool,taxes:digits(g('taxes'))||g('taxes'),style:g('style'),year:g('year'),notes:g('notes')}));
     }
     if(!added.length){importMsg=`<p class="result bad">No homes could be read from that file. Make sure the first row holds the column names.</p>`;renderForm();return;}
     S.comps=replace?[]:S.comps.filter(c=>c.address||c.price||c.listPrice); S.comps.push(...added); S.example=false;
@@ -551,7 +556,8 @@ function compCard(c){
       <div class="csub">${esc(sub)||'&nbsp;'}</div></div>
     <div class="cprice">${price?esc(price):'<span class="empty">$—</span>'}<small>${sold?'Sold price':'List price'}</small></div></div>
     <div class="cgrid">${f('Beds / Baths',(c.beds||c.baths)?esc((c.beds||'—')+' / '+(c.baths||'—')):'<span class="empty">—</span>')}${f('Living area',show(c.sqft,sqft))}${f('Lot',show(c.lot,lot))}${f('Days on market',show(c.dom,days))}
-      ${f('Garage',show(c.pool))}${f('Taxes',show(c.taxes,taxes))}${f('Style',show(c.style))}${f('Year built',show(c.year))}</div></div>`;
+      ${f('Garage',show(c.pool))}${f('Taxes',show(c.taxes,taxes))}${f('Style',show(c.style))}${f('Year built',show(c.year))}</div>
+    ${c.notes&&c.notes.trim()?`<div class="cnote"><span>Additional notes</span><p>${esc(c.notes.trim())}</p></div>`:''}</div>`;
 }
 function renderPages(){
   root.innerHTML='';
@@ -621,8 +627,8 @@ $('#saveDraft').addEventListener('click',()=>offer(`CMA draft - ${safeName(S.cov
 $('#openDraft').addEventListener('click',()=>$('#draftFile').click());
 $('#draftFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.cover||!d.comps) throw 0;S=d;importMsg='';changed(true);toast('Opened '+f.name);}catch(err){toast('That file is not a CMA draft from this builder.');}};r.readAsText(f);e.target.value='';});
 function saveTemplate(){
-  const h='Status,Address,Town,School District,Close Date,List Price,Sold Price,Beds,Baths,Living Area,Lot Size,DOM,Garage,Taxes,Style,Year Built\n';
-  offer('CMA comps template.csv',h+'Sold,,,,,,,,,,,,,,,\nPending,,,,,,,,,,,,,,,\nActive,,,,,,,,,,,,,,,\n');
+  const h='Status,Address,Town,School District,Close Date,List Price,Sold Price,Beds,Baths,Living Area,Lot Size,DOM,Garage,Taxes,Style,Year Built,Additional Notes\n';
+  offer('CMA comps template.csv',h+'Sold,,,,,,,,,,,,,,,,\nPending,,,,,,,,,,,,,,,,\nActive,,,,,,,,,,,,,,,,\n');
 }
 let confirmNew=false;
 $('#newCma').addEventListener('click',()=>{
