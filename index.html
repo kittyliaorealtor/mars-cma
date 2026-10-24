@@ -315,7 +315,7 @@ let LOGO_DARK='';
 /* team roster comes from agents.js; headshots live in the agents/ folder */
 const ROSTER=(Array.isArray(window.MARS_AGENTS)?window.MARS_AGENTS:[]).filter(a=>a&&a.id&&a.name);
 const HEADS={};
-ROSTER.forEach(a=>{if(!a.photo) return; const img=new Image(); img.onload=()=>{try{const m=400,sc=Math.min(1,m/Math.max(img.naturalWidth,img.naturalHeight));const cv=document.createElement('canvas');cv.width=Math.round(img.naturalWidth*sc);cv.height=Math.round(img.naturalHeight*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);HEADS[a.id]=cv.toDataURL('image/jpeg',.9);}catch(e){HEADS[a.id]='agents/'+a.photo;} renderPages();}; img.src='agents/'+encodeURIComponent(a.photo);});
+ROSTER.forEach(a=>{if(!a.photo) return; const img=new Image(); img.onload=()=>{try{const m=400,sc=Math.min(1,m/Math.max(img.naturalWidth,img.naturalHeight));const cv=document.createElement('canvas');cv.width=Math.round(img.naturalWidth*sc);cv.height=Math.round(img.naturalHeight*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);HEADS[a.id]=cv.toDataURL('image/jpeg',.9);}catch(e){HEADS[a.id]='agents/'+a.photo;} renderPages();}; img.src='agents/'+encodeURIComponent(a.photo)+'?t='+Date.now();});
 const rosterAgent=id=>ROSTER.find(a=>a.id===id);
 const chosenAgents=()=>(S.agentIds||[]).map(rosterAgent).filter(Boolean);
 const agentNames=()=>{const n=chosenAgents().map(a=>a.name); return n.length<=2?n.join(' & '):n.slice(0,-1).join(', ')+' & '+n[n.length-1];};
