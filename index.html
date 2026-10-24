@@ -84,6 +84,7 @@ details.sec[open]>summary::after{content:"–"}
 
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field label,.lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ui-muted);font-weight:500}
+.row select{font:inherit;font-size:14px;color:var(--ui-text);background:#fff;border:1px solid var(--ui-line);border-radius:2px;padding:8px 10px;width:100%;min-width:0}
 .field input,.field textarea,.field select,.row input{font:inherit;font-size:14px;color:var(--ui-text);background:#fff;border:1px solid var(--ui-line);border-radius:2px;padding:8px 10px;width:100%;min-width:0}
 .field textarea{min-height:84px;resize:vertical;line-height:1.45}
 .field input:focus,.field textarea:focus,.field select:focus,.row input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(176,141,87,.2)}
@@ -248,11 +249,21 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 .prices .rec span{color:var(--gold)}
 .prices .rec b{font-size:38px}
 .notes{font-size:13.5px;line-height:1.65;color:#33322F;margin:0;white-space:pre-wrap}
-.agent{background:var(--ink);color:#fff;padding:18px 24px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
-.agent .nm{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.01em;margin:4px 0 3px}
-.agent .ttl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#CFCBC3}
-.agent .ct{display:flex;flex-direction:column;gap:6px;text-align:right;font-size:12.5px;color:#E8E5DF}
-.agent img{max-height:48px;max-width:140px}
+.agents{background:var(--ink);color:#fff;padding:20px 24px 22px;display:flex;flex-direction:column;gap:14px}
+.agents .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px}
+.agents.solo .grid{grid-template-columns:minmax(0,1fr)}
+.ag{display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center;min-width:0}
+.agents.solo .ag{grid-template-columns:92px minmax(0,1fr);gap:20px}
+.ag .hs{width:72px;height:72px;background:#2A2926 center/cover no-repeat;border:1px solid rgba(176,141,87,.6);display:flex;align-items:center;justify-content:center;font-size:20px;letter-spacing:.06em;color:var(--gold)}
+.agents.solo .ag .hs{width:92px;height:92px;font-size:26px}
+.ag .nm{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.01em;line-height:1.15}
+.agents.solo .ag .nm{font-size:22px}
+.ag .ttl{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#CFCBC3;margin:4px 0 7px;line-height:1.4}
+.ag .ct{font-size:11.5px;line-height:1.55;color:#E8E5DF;overflow-wrap:anywhere}
+.endblock{flex:1 0 auto;display:flex;flex-direction:column;gap:18px}
+.brandstrip{margin-top:auto;padding-top:16px;border-top:1px solid var(--mist);display:flex;flex-direction:column;align-items:center;gap:9px}
+.brandstrip img{height:46px;width:auto}
+.brandstrip span{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gray)}
 .empty{color:#B9B5AD}
 
 @media (prefers-reduced-motion:no-preference){ .pagewrap{transition:width .15s,height .15s} }
@@ -282,11 +293,22 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 <script src="lib/papaparse.min.js"></script>
 <script src="lib/html2canvas.min.js"></script>
 <script src="lib/jspdf.umd.min.js"></script>
+<script src="agents.js"></script>
 <script>
 (function(){
 const KEY='mars-cma-draft-v1';
 let LOGO='';
-(function loadLogo(){const img=new Image();img.onload=()=>{try{const cv=document.createElement('canvas');cv.width=img.naturalWidth;cv.height=img.naturalHeight;cv.getContext('2d').drawImage(img,0,0);LOGO=cv.toDataURL('image/png');}catch(e){LOGO='logo.png';}renderPages();};img.src='logo.png?v=1';})();
+let LOGO_DARK='';
+(function loadLogo(){const img=new Image();img.onload=()=>{try{const cv=document.createElement('canvas');cv.width=img.naturalWidth;cv.height=img.naturalHeight;const cx=cv.getContext('2d');cx.drawImage(img,0,0);LOGO=cv.toDataURL('image/png');
+  /* a black copy of the white logo for use on white pages */
+  cx.globalCompositeOperation='source-in';cx.fillStyle='#0F0F0E';cx.fillRect(0,0,cv.width,cv.height);LOGO_DARK=cv.toDataURL('image/png');}catch(e){LOGO='logo.png';}renderPages();};img.src='logo.png?v=1';})();
+/* team roster comes from agents.js; headshots live in the agents/ folder */
+const ROSTER=(Array.isArray(window.MARS_AGENTS)?window.MARS_AGENTS:[]).filter(a=>a&&a.id&&a.name);
+const HEADS={};
+ROSTER.forEach(a=>{if(!a.photo) return; const img=new Image(); img.onload=()=>{try{const m=400,sc=Math.min(1,m/Math.max(img.naturalWidth,img.naturalHeight));const cv=document.createElement('canvas');cv.width=Math.round(img.naturalWidth*sc);cv.height=Math.round(img.naturalHeight*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);HEADS[a.id]=cv.toDataURL('image/jpeg',.9);}catch(e){HEADS[a.id]='agents/'+a.photo;} renderPages();}; img.src='agents/'+encodeURIComponent(a.photo);});
+const rosterAgent=id=>ROSTER.find(a=>a.id===id);
+const chosenAgents=()=>(S.agentIds||[]).map(rosterAgent).filter(Boolean);
+const agentNames=()=>{const n=chosenAgents().map(a=>a.name); return n.length<=2?n.join(' & '):n.slice(0,-1).join(', ')+' & '+n[n.length-1];};
 const $=s=>document.querySelector(s);
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let uid=0; const nid=()=>'c'+Date.now().toString(36)+(uid++);
@@ -294,10 +316,11 @@ let uid=0; const nid=()=>'c'+Date.now().toString(36)+(uid++);
 /* ---------- Data ---------- */
 function blankComp(status){return {id:nid(),status:status||'sold',address:'',town:'',district:'',closeDate:'',listPrice:'',price:'',beds:'',baths:'',sqft:'',lot:'',dom:'',pool:'',taxes:'',style:'',year:'',notes:'',photo:''};}
 function defaultAgent(){return {name:'Kitty Liao',title:'NYS Licensed Real Estate Salesperson',team:'The MARS Team',brokerage:'Epique Realty',phone:'',email:'',office:'1177 6th Ave, New York, NY 10036',logo:''};}
-function blankReport(agent){
+function blankReport(agent,agentIds){
   return {
     example:false,
     agent:agent||defaultAgent(),
+    agentIds:agentIds||(ROSTER[0]?[ROSTER[0].id]:[]),
     cover:{eyebrow:'Comparative Market Analysis',address:'',town:'',state:'NY',zip:'',homeowner:'',date:monthNow(),photo:''},
     subject:{eyebrow:'Subject Property',
       specs:['Style','Year Built','Bedrooms','Bathrooms','Living Area','Lot Size','Location','Annual Taxes'].map(l=>({label:l,value:''})),
@@ -346,6 +369,7 @@ function todayLong(){return new Date().toLocaleDateString('en-US',{month:'long',
 let S;
 try{const raw=localStorage.getItem(KEY); if(raw) S=JSON.parse(raw);}catch(e){}
 if(!S||!S.cover) S=blankReport();
+if(!Array.isArray(S.agentIds)) S.agentIds=ROSTER[0]?[ROSTER[0].id]:[];
 
 /* ---------- Formatting ---------- */
 const digits=v=>String(v==null?'':v).replace(/[^0-9.]/g,'');
@@ -416,7 +440,7 @@ function renderForm(){
     return `<div class="compgroup"><h3>${name} · ${items.length}<button type="button" class="btn btn-line btn-small" data-addcomp="${st}">Add ${name.toLowerCase()}</button></h3>
       ${inp('titles.'+st,'Page heading')}${items.map(([c,i])=>compForm(c,i)).join('')}</div>`;}).join('');
   $('#form').innerHTML=
-   (S.example?`<div class="notice"><p>You're looking at <b>example data</b> so you can see a finished report. Start a new CMA to clear it. Your agent details stay.</p></div>`
+   (S.example?`<div class="notice"><p>You're looking at <b>example data</b> so you can see a finished report. Start a new CMA to clear it. Your agents stay selected.</p></div>`
   :`<div class="notice"><p>New to the builder? See a finished example report first.</p><button type="button" class="btn btn-line btn-small" data-example="1">Show example</button></div>`)+
    sec('cover','Cover','Address, client, date',
      inp('cover.address','Street address',{ph:'48 Sample Court'})+
@@ -453,10 +477,12 @@ function renderForm(){
      inp('pricing.notes','How you got there',{area:true,ph:'Which comps matter most and why'})+
      `<span class="lbl">Pricing strategies</span><div class="rep">${(S.pricing.strategies||[]).map((x,i)=>`<div class="importbox" style="border-style:solid;border-color:var(--ui-line)"><div class="row hl"><input aria-label="Strategy name" data-k="pricing.strategies.${i}.title" value="${esc(x.title)}" placeholder="Strategy name, e.g. Low end of the range"><button type="button" class="x" aria-label="Remove strategy" data-del="pricing.strategies" data-i="${i}">×</button></div><div class="field"><textarea aria-label="Strategy details" data-k="pricing.strategies.${i}.detail" placeholder="What this strategy means for the seller">${esc(x.detail)}</textarea></div></div>`).join('')}</div>
      <button type="button" class="btn btn-line btn-small" data-add="strat">Add a strategy</button>`,openSecs.has('pricing'))+
-   sec('agent','Agent & branding','Saved on this device',
-     `<p class="hint">These stay filled in when you start a new CMA.</p>`+
-     inp('agent.name','Agent name')+inp('agent.title','Title')+
-     `<div class="grid2">${inp('agent.phone','Phone',{type:'tel'})}${inp('agent.email','Email',{type:'email'})}</div>`+
+   sec('agent','Agents & branding',(S.agentIds.length||0)+(S.agentIds.length===1?' agent':' agents'),
+     `<span class="lbl">Agents on this CMA</span>`+
+     (ROSTER.length?`<div class="rep">${S.agentIds.map((id,i)=>`<div class="row hl"><select class="agentsel" aria-label="Agent ${i+1}" data-agentidx="${i}">${ROSTER.map(r=>`<option value="${esc(r.id)}" ${r.id===id?'selected':''} ${r.id!==id&&S.agentIds.includes(r.id)?'disabled':''}>${esc(r.name)}</option>`).join('')}</select>${S.agentIds.length>1?`<button type="button" class="x" aria-label="Remove agent" data-delagent="${i}">×</button>`:''}</div>`).join('')}</div>
+       <button type="button" class="btn btn-line btn-small" data-addagent="1" ${S.agentIds.length>=ROSTER.length?'disabled':''}>Add another agent</button>`
+       :`<p class="result bad">The team's agent list (agents.js) didn't load.</p>`)+
+     `<p class="hint">Names, phone numbers, emails and headshots come from the team's agent list. Ask Kitty to add someone or update their details.</p>`+
      `<div class="grid2">${inp('agent.team','Team name')}${inp('agent.brokerage','Brokerage')}</div>`+
      inp('agent.office','Office address'),openSecs.has('agent'));
   $('#form').scrollTop=scroll;
@@ -475,6 +501,7 @@ form.addEventListener('input',e=>{
 form.addEventListener('change',async e=>{
   const t=e.target;
   if(t.dataset.check){setP(t.dataset.check,t.checked);changed(false);return;}
+  if(t.dataset.agentidx!=null){S.agentIds[+t.dataset.agentidx]=t.value;changed(true);return;}
   if(t.dataset.status!=null){const c=S.comps[+t.dataset.status];c.status=t.value;openComps.add(c.id);openSecs.add('comps');changed(true);return;}
   if(t.dataset.photo){const f=t.files[0]; if(!f) return; try{setP(t.dataset.photo,await shrink(f,t.dataset.photo.startsWith('comps.')?1000:1800));changed(true);}catch(err){toast('That image could not be read. Try a JPG or PNG.');} return;}
   if(t.id==='csvFile'){const f=t.files[0]; if(f) importCsv(f,$('#csvReplace').checked); t.value='';}
@@ -482,7 +509,9 @@ form.addEventListener('change',async e=>{
 form.addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
   const d=b.dataset;
-  if(d.del){getP(d.del).splice(+d.i,1);changed(true);}
+  if(d.addagent){const next=ROSTER.find(r=>!S.agentIds.includes(r.id)); if(next){S.agentIds.push(next.id);changed(true);}}
+  else if(d.delagent!=null){S.agentIds.splice(+d.delagent,1);changed(true);}
+  else if(d.del){getP(d.del).splice(+d.i,1);changed(true);}
   else if(d.add==='spec'){S.subject.specs.push({label:'',value:''});changed(true);}
   else if(d.add==='hl'){S.subject.highlights.push('');changed(true);}
   else if(d.add==='strat'){(S.pricing.strategies=S.pricing.strategies||[]).push({title:'',detail:''});changed(true);}
@@ -492,7 +521,7 @@ form.addEventListener('click',e=>{
   else if(d.move){const i=+d.move,st=S.comps[i].status;const same=S.comps.map((c,j)=>[c,j]).filter(([c])=>c.status===st).map(x=>x[1]);const p=same.indexOf(i)+(+d.dir); if(p<0||p>=same.length) return; const j=same[p];[S.comps[i],S.comps[j]]=[S.comps[j],S.comps[i]];changed(true);}
   else if(d.dup){const c=Object.assign({},S.comps[+d.dup],{id:nid(),address:S.comps[+d.dup].address+' (copy)'});S.comps.splice(+d.dup+1,0,c);openComps.add(c.id);changed(true);}
   else if(d.delcomp){const c=S.comps[+d.delcomp]; if(pendingDelete===c.id){S.comps.splice(+d.delcomp,1);pendingDelete=null;changed(true);} else {pendingDelete=c.id;renderForm();setTimeout(()=>{if(pendingDelete===c.id){pendingDelete=null;renderForm();}},3500);}}
-  else if(d.example){const agent=S.agent;S=exampleReport();S.agent=agent;openSecs.add('cover');changed(true);toast('Example loaded. Click Start new CMA when you’re ready to make a real one.');}
+  else if(d.example){const agent=S.agent,ids=S.agentIds;S=exampleReport();S.agent=agent;S.agentIds=ids;openSecs.add('cover');changed(true);toast('Example loaded. Click Start new CMA when you’re ready to make a real one.');}
   else if(b.id==='csvTemplate') saveTemplate();
 });
 
@@ -580,7 +609,7 @@ function coverPage(){
       <div class="addr">${c.address?esc(c.address):'<span class="empty">Street address</span>'}</div>
       <div class="town">${esc([c.town,[c.state,c.zip].filter(Boolean).join(' ')].filter(Boolean).join(', '))}</div>
       <div class="rule"></div>
-      <div class="meta">${c.homeowner?`<div>Prepared for <b>${esc(c.homeowner)}</b></div>`:''}<div>Prepared by <b>${esc(a.name)}</b></div><div>${esc(c.date)}</div></div>
+      <div class="meta">${c.homeowner?`<div>Prepared for <b>${esc(c.homeowner)}</b></div>`:''}${agentNames()?`<div>Prepared by <b>${esc(agentNames())}</b></div>`:''}<div>${esc(c.date)}</div></div>
     </div>
     <div class="mark"><span>${LOGO?esc(a.brokerage):esc(a.team)+(a.brokerage?' · '+esc(a.brokerage):'')}</span></div>
   </div>`;
@@ -653,12 +682,19 @@ function renderPages(){
     pars.forEach((par,i)=>blocks.push(`<div>${i?'':'<div class="h4">How we arrived at this range</div>'}<p class="notes">${esc(par)}</p></div>`));
     const strats=(p.strategies||[]).filter(x=>x.title||x.detail);
     strats.forEach((x,i)=>blocks.push(`<div>${i?'':'<div class="h4">Pricing strategies</div>'}<div class="strat">${x.title?`<b>${esc(x.title)}</b>`:''}${x.detail?`<p>${esc(x.detail)}</p>`:''}</div></div>`));
-    blocks.push(`<div class="agent"><div><div class="eyebrow">Your agent</div><div class="nm">${esc(a.name)}</div><div class="ttl">${esc(a.title)}</div></div>
-      <div class="ct">${LOGO?`<img src="${LOGO}" alt="" style="align-self:flex-end">`:''}${a.phone?`<div>${esc(a.phone)}</div>`:''}${a.email?`<div>${esc(a.email)}</div>`:''}<div>${esc([a.team,a.brokerage].filter(Boolean).join(' · '))}</div>${a.office?`<div>${esc(a.office)}</div>`:''}</div></div>`);
+    const ags=chosenAgents(); let end='';
+    if(ags.length){
+      const initials=n=>n.split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+      end=`><div class="eyebrow">${ags.length===1?'Your agent':'Your agents'}</div><div class="grid">${ags.map(g=>`<div class="ag"><div class="hs" style="${HEADS[g.id]?`background-image:url('${HEADS[g.id]}')`:''}">${HEADS[g.id]?'':esc(initials(g.name))}</div>
+        <div><div class="nm">${esc(g.name)}</div>${g.title?`<div class="ttl">${esc(g.title)}</div>`:''}<div class="ct">${g.phone?`<div>${esc(g.phone)}</div>`:''}${g.email?`<div>${esc(g.email)}</div>`:''}</div></div></div>`).join('')}</div></div>`;
+      end=`<div class="agents${ags.length===1?' solo':''}"`+end;
+    }
+    if(LOGO_DARK||a.office) end+=`<div class="brandstrip">${LOGO_DARK?`<img src="${LOGO_DARK}" alt="${esc(a.team)}">`:''}${a.office?`<span>${esc(a.office)}</span>`:''}</div>`;
+    if(end) blocks.push(`<div class="endblock">${end}</div>`);
     flow('Pricing Strategy','Where this home should be priced',blocks);
   }
   const pages=root.querySelectorAll('.page');
-  pages.forEach((pg,i)=>{const n=pg.querySelector('.pnum'); if(n) n.textContent=`${a.name?a.name+' · ':''}Page ${i+1} of ${pages.length}`;});
+  pages.forEach((pg,i)=>{const n=pg.querySelector('.pnum'); if(n) n.textContent=`${chosenAgents().length===1?chosenAgents()[0].name+' · ':''}Page ${i+1} of ${pages.length}`;});
   $('#pageCount').textContent=`${pages.length} pages · letter size`;
   fit();
 }
@@ -703,7 +739,7 @@ $('#newCma').addEventListener('click',()=>{
   const b=$('#newCma');
   if(!confirmNew){confirmNew=true;b.textContent='Click again to clear';setTimeout(()=>{confirmNew=false;b.textContent='Start new CMA';},3500);return;}
   confirmNew=false;b.textContent='Start new CMA';
-  const agent=S.agent; S=blankReport(agent); importMsg=''; openSecs.clear(); openSecs.add('cover'); openComps.clear(); S.comps.forEach(c=>openComps.add(c.id)); changed(true); $('#form').scrollTop=0; toast('New CMA started. Your agent details were kept.');
+  const agent=S.agent; S=blankReport(agent,S.agentIds); importMsg=''; openSecs.clear(); openSecs.add('cover'); openComps.clear(); S.comps.forEach(c=>openComps.add(c.id)); changed(true); $('#form').scrollTop=0; toast('New CMA started. Your agents were kept.');
 });
 
 renderForm();
