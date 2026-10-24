@@ -138,6 +138,9 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 .band h1{margin:10px 0 0;font-family:var(--display);font-weight:500;font-size:32px;line-height:1.12;letter-spacing:-.015em}
 .band h1 em{font-style:normal;font-weight:400;color:var(--gold-soft);font-size:.5em;letter-spacing:.2em;text-transform:uppercase;margin-left:14px}
 .pbody{flex:1;min-height:0;overflow:hidden;padding:30px 56px 10px;display:flex;flex-direction:column;gap:18px}
+.pbody.tight{gap:11px;padding-top:20px}
+.pbody.tight .range{padding:0}
+.pbody.tight .range b{font-size:34px}
 .pfoot{flex:none;height:48px;margin:0 56px;border-top:1px solid var(--mist);display:flex;align-items:center;justify-content:space-between;
   font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--gray)}
 .pfoot b{color:var(--ink);font-weight:500}
@@ -237,6 +240,7 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .legend i.rng{border-radius:0;background:rgba(176,141,87,.3);border:1px solid var(--gold)}
 .h4{margin:0 0 8px;font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.strats{display:grid;gap:12px 18px}
 .strat{border-left:2px solid var(--gold);padding:1px 0 1px 14px;margin-top:-4px}
 .strat b{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
 .strat p{margin:0;font-size:12px;line-height:1.5;color:#33322F;white-space:pre-wrap}
@@ -249,20 +253,26 @@ details.comp>summary .pr{color:var(--ui-muted);font-variant-numeric:tabular-nums
 .prices .rec span{color:var(--gold)}
 .prices .rec b{font-size:38px}
 .notes{font-size:13.5px;line-height:1.65;color:#33322F;margin:0;white-space:pre-wrap}
-.agents{background:var(--ink);color:#fff;padding:20px 24px 22px;display:flex;flex-direction:column;gap:14px}
+.agents{background:var(--ink);color:#fff;padding:14px 22px 16px;display:flex;flex-direction:column;gap:10px}
 .agents .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px}
 .agents.solo .grid{grid-template-columns:minmax(0,1fr)}
 .ag{display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center;min-width:0}
-.agents.solo .ag{grid-template-columns:92px minmax(0,1fr);gap:20px}
+.agents.solo .ag{grid-template-columns:76px minmax(0,1fr);gap:18px}
 .ag .hs{width:72px;height:72px;background:#2A2926 center/cover no-repeat;border:1px solid rgba(176,141,87,.6);display:flex;align-items:center;justify-content:center;font-size:20px;letter-spacing:.06em;color:var(--gold)}
-.agents.solo .ag .hs{width:92px;height:92px;font-size:26px}
+.agents.solo .ag .hs{width:76px;height:76px;font-size:24px}
 .ag .nm{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.01em;line-height:1.15}
 .agents.solo .ag .nm{font-size:22px}
 .ag .ttl{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#CFCBC3;margin:4px 0 7px;line-height:1.4}
 .ag .ct{font-size:11.5px;line-height:1.55;color:#E8E5DF;overflow-wrap:anywhere}
-.endblock{flex:1 0 auto;display:flex;flex-direction:column;gap:18px}
-.brandstrip{margin-top:auto;padding-top:16px;border-top:1px solid var(--mist);display:flex;flex-direction:column;align-items:center;gap:9px}
-.brandstrip img{height:46px;width:auto}
+.endblock{flex:1 0 auto;display:flex;flex-direction:column;justify-content:flex-end;gap:12px}
+.compmap{position:relative;width:704px;height:240px;background:var(--mist);overflow:hidden}
+.compmap img{position:absolute;inset:0;width:704px;height:240px;max-width:none}
+.compmap .wait{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gray)}
+.maplegend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin-top:8px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gray)}
+.maplegend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.maplegend .attr{margin-left:auto;letter-spacing:.04em;text-transform:none;font-size:9px}
+.brandstrip{padding-top:9px;border-top:1px solid var(--mist);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brandstrip img{height:32px;width:auto}
 .brandstrip span{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gray)}
 .empty{color:#B9B5AD}
 
@@ -330,7 +340,7 @@ function blankReport(agent,agentIds){
       source:'Source: OneKey MLS · Single-Family Residences · As of '+todayLong(),footnote:''},
     titles:{sold:'Closed in the Last 180 Days',pending:'Under Contract',active:'Currently On the Market'},
     comps:[blankComp('sold'),blankComp('pending'),blankComp('active')],
-    pricing:{show:true,low:'',rec:'',high:'',notes:'',strategies:[{title:'',detail:''}]}
+    pricing:{show:true,map:true,low:'',rec:'',high:'',notes:'',strategies:[{title:'',detail:''}]}
   };
 }
 function exampleReport(){
@@ -356,7 +366,10 @@ function exampleReport(){
     c('active','30 Mockup Avenue','','989000','','4','3','2700','1.00 ac','6','2-car att.','18120','Colonial','1972'),
     Object.assign(c('active','118 Example Hollow','','849000','','3','2','2050','0.55 ac','27','None','14050','Ranch','1957'),{notes:'Original 1957 kitchen. On a busy through street.'})
   ];
-  r.pricing={show:true,low:'$899,000',rec:'',high:'$959,000',strategies:[
+  const spots=[[40.8648,-73.2132],[40.8571,-73.1867],[40.8496,-73.2049],[40.8702,-73.1938],[40.8462,-73.1795],[40.8611,-73.2208],[40.8745,-73.2061],[40.8534,-73.1712]];
+  r.comps.forEach((x,i)=>x.geo={key:compKey(x),lat:spots[i][0],lng:spots[i][1]});
+  r.cover.geo={key:geoKey(r.cover.address,r.cover.town,r.cover.zip),lat:40.8589,lng:-73.1989};
+  r.pricing={show:true,map:true,low:'$899,000',rec:'',high:'$959,000',strategies:[
     {title:'Low end of the range',detail:'Priced near $899,000 to draw the most buyers and the best chance of multiple offers in the first weekend. Best if you want speed and a competitive bidding situation.'},
     {title:'Middle of the range',detail:'Priced near $929,000, just above the closest pending sale. Balances buyer interest with room to negotiate, and is supported by the most recent closing at $925,000.'},
     {title:'High end of the range',detail:'Priced near $959,000 to test the market for the carriage house and horse rights. Expect a longer time on market and plan a price review after two to three weeks.'}],
@@ -395,7 +408,7 @@ function persist(){clearTimeout(saveT);saveT=setTimeout(()=>{
   try{localStorage.setItem(KEY,JSON.stringify(S));}
   catch(e){try{const lite=JSON.parse(JSON.stringify(S));lite.cover.photo='';localStorage.setItem(KEY,JSON.stringify(lite));toast('Draft kept without photos. Use Save draft file to keep the photos too.');}catch(e2){}}
 },400);}
-function changed(structural){if(S.example&&structural!=='keepExample'){} persist(); clearTimeout(renderT); renderT=setTimeout(renderPages,structural?0:140); if(structural===true) renderForm();}
+function changed(structural){persist(); scheduleGeo(); setTimeout(updateMapStatus,0); clearTimeout(renderT); renderT=setTimeout(renderPages,structural?0:140); if(structural===true) renderForm();}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(t._t);t._t=setTimeout(()=>t.hidden=true,4200);}
 
 /* ---------- Form ---------- */
@@ -471,10 +484,11 @@ function renderForm(){
       ${importMsg}</div>`+groups,openSecs.has('comps'))+
    sec('pricing','Pricing','Price range, chart and strategies',
      `<label class="toggle"><input type="checkbox" data-check="pricing.show" ${S.pricing.show?'checked':''}> Include this page</label>`+
+     `<label class="toggle"><input type="checkbox" data-check="pricing.map" ${S.pricing.map!==false?'checked':''}> Show a map of the comps</label><p class="hint" id="mapStatus"></p>`+
      `<div class="grid2">${inp('pricing.low','Low end of range')}${inp('pricing.high','High end of range')}</div>`+
      inp('pricing.rec','Exact list price (optional)',{ph:'Leave blank to show only the range'})+
      `<p class="hint">The chart plots every comp with an address and price, and shades your range.</p>`+
-     inp('pricing.notes','How you got there',{area:true,ph:'Which comps matter most and why'})+
+     inp('pricing.notes','How you arrived at this range',{area:true,ph:'Which comps matter most and why'})+
      `<span class="lbl">Pricing strategies</span><div class="rep">${(S.pricing.strategies||[]).map((x,i)=>`<div class="importbox" style="border-style:solid;border-color:var(--ui-line)"><div class="row hl"><input aria-label="Strategy name" data-k="pricing.strategies.${i}.title" value="${esc(x.title)}" placeholder="Strategy name, e.g. Low end of the range"><button type="button" class="x" aria-label="Remove strategy" data-del="pricing.strategies" data-i="${i}">×</button></div><div class="field"><textarea aria-label="Strategy details" data-k="pricing.strategies.${i}.detail" placeholder="What this strategy means for the seller">${esc(x.detail)}</textarea></div></div>`).join('')}</div>
      <button type="button" class="btn btn-line btn-small" data-add="strat">Add a strategy</button>`,openSecs.has('pricing'))+
    sec('agent','Agents & branding',(S.agentIds.length||0)+(S.agentIds.length===1?' agent':' agents'),
@@ -500,7 +514,7 @@ form.addEventListener('input',e=>{
 });
 form.addEventListener('change',async e=>{
   const t=e.target;
-  if(t.dataset.check){setP(t.dataset.check,t.checked);changed(false);return;}
+  if(t.dataset.check){setP(t.dataset.check,t.checked);changed(false);updateMapStatus();return;}
   if(t.dataset.agentidx!=null){S.agentIds[+t.dataset.agentidx]=t.value;changed(true);return;}
   if(t.dataset.status!=null){const c=S.comps[+t.dataset.status];c.status=t.value;openComps.add(c.id);openSecs.add('comps');changed(true);return;}
   if(t.dataset.photo){const f=t.files[0]; if(!f) return; try{setP(t.dataset.photo,await shrink(f,t.dataset.photo.startsWith('comps.')?1000:1800));changed(true);}catch(err){toast('That image could not be read. Try a JPG or PNG.');} return;}
@@ -546,6 +560,8 @@ const MAP={
   taxes:['taxannualamount','taxes','annualtaxes','totaltaxes','taxamount','realestatetaxes','tax'],
   style:['architecturalstyle','style','homestyle'],
   year:['yearbuilt','yrbuilt','builtyear'],
+  lat:['latitude','lat'],
+  lng:['longitude','lng','lon','long'],
   town:['city','town','postalcity','municipality'],
   district:['highschooldistrict','schooldistrict','elementaryschooldistrict','district'],
   notes:['additionalnotes','notes','note','comments','agentnotes']
@@ -572,6 +588,7 @@ function importCsv(file,replace){
       added.push(Object.assign(blankComp(status),{address,town:g('town'),district:g('district'),closeDate:isoDate(g('closeDate'))||g('closeDate'),
         listPrice:digits(g('listPrice'))||g('listPrice'),price:digits(g('price'))||g('price'),beds:g('beds'),baths,sqft:digits(g('sqft'))||g('sqft'),
         lot:lotv,dom:g('dom'),pool,taxes:digits(g('taxes'))||g('taxes'),style:g('style'),year:g('year'),notes:g('notes')}));
+      {const last=added[added.length-1],la=parseFloat(g('lat')),lo=parseFloat(g('lng')); if(!isNaN(la)&&!isNaN(lo)&&la) last.geo={key:compKey(last),lat:la,lng:lo};}
     }
     if(!added.length){importMsg=`<p class="result bad">No homes could be read from that file. Make sure the first row holds the column names.</p>`;renderForm();return;}
     S.comps=replace?[]:S.comps.filter(c=>c.address||c.price||c.listPrice); S.comps.push(...added); S.example=false;
@@ -592,11 +609,12 @@ function makePage(eyebrow,title,sub){
   root.appendChild(w); return w.querySelector('.pbody');
 }
 function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild;}
-function flow(eyebrow,title,blocks){
+function flow(eyebrow,title,blocks,cls){
   if(!blocks.length) return;
-  let body=makePage(eyebrow,title);
+  const mk=sub=>{const b=makePage(eyebrow,title,sub); if(cls) b.classList.add(cls); return b;};
+  let body=mk();
   for(const html of blocks){const b=el(html); body.appendChild(b);
-    if(body.scrollHeight>body.clientHeight+1&&body.children.length>1){b.remove();body=makePage(eyebrow,title,'continued');body.appendChild(b);}}
+    if(body.scrollHeight>body.clientHeight+1&&body.children.length>1){b.remove();body=mk('continued');body.appendChild(b);}}
 }
 function coverPage(){
   const c=S.cover,a=S.agent;const w=document.createElement('div');w.className='pagewrap';
@@ -650,7 +668,107 @@ function priceChart(p){
   const dots=pts.map(({c,v,lane})=>`<div class="pt ${c.status}" style="left:${x(v)};bottom:${lane*LH-5}px"></div>`).join('');
   const has=st=>pts.some(q=>q.c.status===st);
   return `<div><div class="pline" style="height:${H}px">${grid}${band}${recl}<div class="base"></div>${dots}</div><div class="axis">${ticks}</div>
-    <div class="legend">${has('sold')?'<span><i style="background:var(--ink)"></i>Sold</span>':''}${has('pending')?'<span><i style="background:var(--gold)"></i>Pending</span>':''}${has('active')?'<span><i style="background:#fff;border:1.5px solid var(--ink)"></i>Active</span>':''}${band?'<span><i class="rng"></i>Suggested range</span>':''}${recl?'<span><i style="width:12px;height:0;border-radius:0;border-top:1.5px dashed var(--ink);vertical-align:3px"></i>Recommended</span>':''}</div></div>`;
+    <div class="legend"${mapBlock()?' hidden':''}>${has('sold')?'<span><i style="background:var(--ink)"></i>Sold</span>':''}${has('pending')?'<span><i style="background:var(--gold)"></i>Pending</span>':''}${has('active')?'<span><i style="background:#fff;border:1.5px solid var(--ink)"></i>Active</span>':''}${band?'<span><i class="rng"></i>Suggested range</span>':''}${recl?'<span><i style="width:12px;height:0;border-radius:0;border-top:1.5px dashed var(--ink);vertical-align:3px"></i>Recommended</span>':''}</div></div>`;
+}
+/* ---------- comp map ---------- */
+const geoKey=(a,t,z)=>[a,t,z].map(x=>String(x||'').trim().toLowerCase()).join('|');
+const subjectKey=()=>geoKey(S.cover.address,S.cover.town,S.cover.zip);
+const compKey=c=>geoKey(c.address,c.town,'');
+const located=(o,k)=>o.geo&&o.geo.key===k&&o.geo.lat!=null;
+function mapPoints(){
+  const pts=[];
+  S.comps.filter(c=>c.address&&located(c,compKey(c))).forEach(c=>pts.push({lat:c.geo.lat,lng:c.geo.lng,kind:c.status}));
+  if(S.cover.address&&located(S.cover,subjectKey())) pts.push({lat:S.cover.geo.lat,lng:S.cover.geo.lng,kind:'subject'});
+  return pts;
+}
+let lastGeo=0; const geoTried=new Set();
+async function geocode(q){
+  const wait=Math.max(0,1100-(Date.now()-lastGeo)); if(wait) await new Promise(r=>setTimeout(r,wait)); lastGeo=Date.now();
+  const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q='+encodeURIComponent(q),{headers:{Accept:'application/json'}});
+  if(!r.ok) throw new Error('lookup '+r.status); const j=await r.json(); return j[0]?{lat:+(+j[0].lat).toFixed(5),lng:+(+j[0].lon).toFixed(5)}:null;
+}
+let geoBusy=false,geoT;
+function scheduleGeo(){clearTimeout(geoT);geoT=setTimeout(runGeo,1500);}
+async function runGeo(){
+  if(geoBusy||S.pricing.map===false) return; geoBusy=true;
+  try{
+    const jobs=[];
+    if(S.cover.address&&(S.cover.town||S.cover.zip)&&!located(S.cover,subjectKey())) jobs.push({o:S.cover,k:subjectKey(),q:`${S.cover.address}, ${S.cover.town||''}, ${S.cover.state||'NY'} ${S.cover.zip||''}`});
+    S.comps.forEach(c=>{if(c.address&&c.town&&!located(c,compKey(c))) jobs.push({o:c,k:compKey(c),q:`${c.address}, ${c.town}, NY`});});
+    for(const j of jobs){
+      if(geoTried.has(j.k)) continue; geoTried.add(j.k);
+      try{const g=await geocode(j.q); j.o.geo=g?{key:j.k,lat:g.lat,lng:g.lng}:{key:j.k,lat:null,fail:true};}catch(e){geoTried.delete(j.k);}
+      persist(); updateMapStatus(); clearTimeout(renderT); renderT=setTimeout(renderPages,300);
+    }
+  }finally{geoBusy=false;}
+}
+function updateMapStatus(){
+  const el=document.getElementById('mapStatus'); if(!el) return;
+  const comps=S.comps.filter(c=>c.address);
+  const ok=comps.filter(c=>located(c,compKey(c))).length;
+  const failed=comps.filter(c=>c.geo&&c.geo.key===compKey(c)&&c.geo.fail).map(c=>c.address);
+  const subj=!S.cover.address?'Add the subject address on the cover':located(S.cover,subjectKey())?'Subject home found':(S.cover.geo&&S.cover.geo.key===subjectKey()&&S.cover.geo.fail)?'Subject home not found. Check the address and town on the cover':'Finding the subject home…';
+  el.innerHTML=`${esc(subj)} · ${ok} of ${comps.length} comps on the map`+(failed.length?`<br><span style="color:var(--warn)">Not found: ${esc(failed.join('; '))}. Check the address and town.</span>`:'');
+}
+const MW=704,MH=240; let mapImg='',mapFor='',mapBuilding=null;
+function mapLayout(pts){
+  const wx=(lng,z)=>256*2**z*(lng+180)/360;
+  const wy=(lat,z)=>{const r=lat*Math.PI/180;return 256*2**z*(1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2;};
+  /* zoom in as far as the homes allow (fractional zoom fills the frame) */
+  const sx=Math.max(...pts.map(p=>wx(p.lng,0)))-Math.min(...pts.map(p=>wx(p.lng,0)));
+  const sy=Math.max(...pts.map(p=>wy(p.lat,0)))-Math.min(...pts.map(p=>wy(p.lat,0)));
+  let z=Math.min(Math.log2((MW-60)/Math.max(sx,1e-9)),Math.log2((MH-50)/Math.max(sy,1e-9)));
+  z=Math.max(9,Math.min(16,z));
+  const xs=pts.map(p=>wx(p.lng,z)),ys=pts.map(p=>wy(p.lat,z));
+  const cx=(Math.max(...xs)+Math.min(...xs))/2, cy=(Math.max(...ys)+Math.min(...ys))/2;
+  return {z,x0:cx-MW/2,y0:cy-MH/2,px:p=>({x:wx(p.lng,z)-(cx-MW/2),y:wy(p.lat,z)-(cy-MH/2)})};
+}
+function buildMap(){
+  const pts=mapPoints(); const key=JSON.stringify(pts);
+  if(key===mapFor&&mapImg) return Promise.resolve();
+  if(mapBuilding&&mapBuilding.key===key) return mapBuilding.p;
+  const p=(async()=>{
+    const L=mapLayout(pts), K=2, Z=Math.min(Math.ceil(L.z+1),19), f=2**(L.z+1-Z), T=256*f;
+    const cv=document.createElement('canvas'); cv.width=MW*K; cv.height=MH*K; const cx=cv.getContext('2d');
+    cx.fillStyle='#EFEDE8'; cx.fillRect(0,0,cv.width,cv.height);
+    const X0=L.x0*K, Y0=L.y0*K, n=2**Z, tiles=[];
+    for(let tx=Math.floor(X0/T);tx<=Math.floor((X0+cv.width)/T);tx++) for(let ty=Math.floor(Y0/T);ty<=Math.floor((Y0+cv.height)/T);ty++){
+      if(ty<0||ty>=n) continue;
+      tiles.push(new Promise(res=>{const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>{cx.drawImage(im,tx*T-X0,ty*T-Y0,T+.5,T+.5);res(true);}; im.onerror=()=>res(false); im.src=`https://tile.openstreetmap.org/${Z}/${((tx%n)+n)%n}/${ty}.png`;}));
+    }
+    const got=await Promise.race([Promise.all(tiles),new Promise(r=>setTimeout(()=>r(null),8000))]);
+    try{ // soften the street map to warm grays so the pins stand out
+      const d=cx.getImageData(0,0,cv.width,cv.height),a=d.data;
+      for(let i=0;i<a.length;i+=4){const g=.3*a[i]+.59*a[i+1]+.11*a[i+2]; const v=255-(255-g)*.62; a[i]=v*.985;a[i+1]=v*.975;a[i+2]=v*.955;}
+      cx.putImageData(d,0,0);
+    }catch(e){cx.fillStyle='#EFEDE8';cx.fillRect(0,0,cv.width,cv.height);}
+    const order={sold:0,pending:1,active:2,subject:3};
+    pts.slice().sort((a,b)=>order[a.kind]-order[b.kind]).forEach(pt=>{
+      const q=L.px(pt), x=q.x*K, y=q.y*K;
+      cx.beginPath();
+      if(pt.kind==='subject'){
+        cx.arc(x,y,11*K,0,7);cx.fillStyle='rgba(200,16,46,.18)';cx.fill();
+        cx.beginPath();cx.arc(x,y,7*K,0,7);cx.fillStyle='#C8102E';cx.fill();cx.lineWidth=2.2*K;cx.strokeStyle='#fff';cx.stroke();
+        cx.beginPath();cx.arc(x,y,2.2*K,0,7);cx.fillStyle='#fff';cx.fill();
+      }else{
+        cx.arc(x,y,5*K,0,7);
+        cx.fillStyle=pt.kind==='sold'?'#0F0F0E':pt.kind==='pending'?'#B08D57':'#FFFFFF';cx.fill();
+        cx.lineWidth=(pt.kind==='active'?1.6:1.4)*K;cx.strokeStyle=pt.kind==='active'?'#0F0F0E':'#FFFFFF';cx.stroke();
+      }
+    });
+    mapImg=cv.toDataURL('image/jpeg',.9); mapFor=key;
+  })();
+  mapBuilding={key,p}; p.then(()=>{if(mapBuilding&&mapBuilding.key===key) mapBuilding=null; renderPages();},()=>{mapBuilding=null;});
+  return p;
+}
+function mapBlock(){
+  if(S.pricing.map===false) return '';
+  const pts=mapPoints(); if(!pts.some(p=>p.kind==='subject')||pts.length<2) return '';
+  const key=JSON.stringify(pts), ready=mapImg&&mapFor===key;
+  if(!ready) buildMap();
+  const has=k=>pts.some(p=>p.kind===k);
+  return `<div><div class="compmap">${ready?`<img src="${mapImg}" alt="">`:'<div class="wait">Drawing map…</div>'}</div>
+    <div class="maplegend"><span><i style="background:#C8102E"></i>This home</span>${has('sold')?'<span><i style="background:var(--ink)"></i>Sold</span>':''}${has('pending')?'<span><i style="background:var(--gold)"></i>Pending</span>':''}${has('active')?'<span><i style="background:#fff;border:1.5px solid var(--ink)"></i>Active</span>':''}<span class="attr">Map data © OpenStreetMap contributors</span></div></div>`;
 }
 function renderPages(){
   root.innerHTML='';
@@ -676,12 +794,17 @@ function renderPages(){
   flow('Active Inventory',S.titles.active,by('active').map(compCard));
   const p=S.pricing,a=S.agent;
   if(p.show){
-    const blocks=[`<div class="range"><span>Suggested price range</span><b>${show(p.low,money)}<i>–</i>${show(p.high,money)}</b>${p.rec?`<em>Recommended list price<strong>${esc(money(p.rec))}</strong></em>`:''}</div>`];
+    const blocks=[]; const mb=mapBlock(); if(mb) blocks.push(mb);
+    blocks.push(`<div class="range"><span>Suggested price range</span><b>${show(p.low,money)}<i>–</i>${show(p.high,money)}</b>${p.rec?`<em>Recommended list price<strong>${esc(money(p.rec))}</strong></em>`:''}</div>`);
     const chart=priceChart(p); if(chart) blocks.push(chart);
     const pars=(p.notes||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
-    pars.forEach((par,i)=>blocks.push(`<div>${i?'':'<div class="h4">How we arrived at this range</div>'}<p class="notes">${esc(par)}</p></div>`));
     const strats=(p.strategies||[]).filter(x=>x.title||x.detail);
-    strats.forEach((x,i)=>blocks.push(`<div>${i?'':'<div class="h4">Pricing strategies</div>'}<div class="strat">${x.title?`<b>${esc(x.title)}</b>`:''}${x.detail?`<p>${esc(x.detail)}</p>`:''}</div></div>`));
+    let head=(pars.length||strats.length)?'<div class="h4">How we arrived at this range &amp; pricing strategies</div>':'';
+    pars.forEach(par=>{blocks.push(`<div>${head}<p class="notes">${esc(par)}</p></div>`);head='';});
+    const per=strats.length===4?2:3;
+    for(let i=0;i<strats.length;i+=per){
+      blocks.push(`<div>${head}<div class="strats" style="grid-template-columns:repeat(${Math.min(per,strats.length)},minmax(0,1fr))">${strats.slice(i,i+per).map(x=>`<div class="strat">${x.title?`<b>${esc(x.title)}</b>`:''}${x.detail?`<p>${esc(x.detail)}</p>`:''}</div>`).join('')}</div></div>`);head='';
+    }
     const ags=chosenAgents(); let end='';
     if(ags.length){
       const initials=n=>n.split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -691,7 +814,7 @@ function renderPages(){
     }
     if(LOGO_DARK||a.office) end+=`<div class="brandstrip">${LOGO_DARK?`<img src="${LOGO_DARK}" alt="${esc(a.team)}">`:''}${a.office?`<span>${esc(a.office)}</span>`:''}</div>`;
     if(end) blocks.push(`<div class="endblock">${end}</div>`);
-    flow('Pricing Strategy','Where this home should be priced',blocks);
+    flow('Our Recommendation','Pricing Strategy',blocks,'tight');
   }
   const pages=root.querySelectorAll('.page');
   pages.forEach((pg,i)=>{const n=pg.querySelector('.pnum'); if(n) n.textContent=`${chosenAgents().length===1?chosenAgents()[0].name+' · ':''}Page ${i+1} of ${pages.length}`;});
@@ -713,7 +836,7 @@ $('#savePdf').addEventListener('click',async()=>{
   const btn=$('#savePdf');if(!window.html2canvas||!window.jspdf){toast('The PDF tools did not load. Reload the page and try again.');return;}
   btn.disabled=true;const label=btn.textContent;
   try{
-    clearTimeout(renderT);renderPages();await document.fonts.ready;
+    clearTimeout(renderT);if(mapBlock()){btn.textContent='Drawing map…';await buildMap();}renderPages();await document.fonts.ready;
     const pages=[...root.querySelectorAll('.page')];
     const pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter',orientation:'portrait',compress:true});
     for(let i=0;i<pages.length;i++){
@@ -743,7 +866,7 @@ $('#newCma').addEventListener('click',()=>{
 });
 
 renderForm();
-document.fonts.ready.then(renderPages); renderPages();
+document.fonts.ready.then(renderPages); renderPages(); updateMapStatus(); scheduleGeo();
 })();
 </script>
 </body>
