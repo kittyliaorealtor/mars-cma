@@ -315,7 +315,7 @@ let LOGO_DARK='';
 /* team roster comes from agents.js; headshots live in the agents/ folder */
 const ROSTER=(Array.isArray(window.MARS_AGENTS)?window.MARS_AGENTS:[]).filter(a=>a&&a.id&&a.name);
 const HEADS={};
-ROSTER.forEach(a=>{if(!a.photo) return; const img=new Image(); img.onload=()=>{try{const m=400,sc=Math.min(1,m/Math.max(img.naturalWidth,img.naturalHeight));const cv=document.createElement('canvas');cv.width=Math.round(img.naturalWidth*sc);cv.height=Math.round(img.naturalHeight*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);HEADS[a.id]=cv.toDataURL('image/jpeg',.9);}catch(e){HEADS[a.id]='agents/'+a.photo;} renderPages();}; img.src='agents/'+encodeURIComponent(a.photo)+'?t='+Date.now();});
+ROSTER.forEach(a=>{if(!a.photo) return; const img=new Image(); img.onload=()=>{try{const m=800,sc=Math.min(1,m/Math.max(img.naturalWidth,img.naturalHeight));const cv=document.createElement('canvas');cv.width=Math.round(img.naturalWidth*sc);cv.height=Math.round(img.naturalHeight*sc);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);HEADS[a.id]=cv.toDataURL('image/jpeg',.9);}catch(e){HEADS[a.id]='agents/'+a.photo;} renderPages();}; img.src='agents/'+encodeURIComponent(a.photo)+'?t='+Date.now();});
 const rosterAgent=id=>ROSTER.find(a=>a.id===id);
 const chosenAgents=()=>(S.agentIds||[]).map(rosterAgent).filter(Boolean);
 const agentNames=()=>{const n=chosenAgents().map(a=>a.name); return n.length<=2?n.join(' & '):n.slice(0,-1).join(', ')+' & '+n[n.length-1];};
@@ -517,7 +517,7 @@ form.addEventListener('change',async e=>{
   if(t.dataset.check){setP(t.dataset.check,t.checked);changed(false);updateMapStatus();return;}
   if(t.dataset.agentidx!=null){S.agentIds[+t.dataset.agentidx]=t.value;changed(true);return;}
   if(t.dataset.status!=null){const c=S.comps[+t.dataset.status];c.status=t.value;openComps.add(c.id);openSecs.add('comps');changed(true);return;}
-  if(t.dataset.photo){const f=t.files[0]; if(!f) return; try{setP(t.dataset.photo,await shrink(f,t.dataset.photo.startsWith('comps.')?1000:1800));changed(true);}catch(err){toast('That image could not be read. Try a JPG or PNG.');} return;}
+  if(t.dataset.photo){const f=t.files[0]; if(!f) return; try{setP(t.dataset.photo,await shrink(f,t.dataset.photo.startsWith('comps.')?1600:2400));changed(true);}catch(err){toast('That image could not be read. Try a JPG or PNG.');} return;}
   if(t.id==='csvFile'){const f=t.files[0]; if(f) importCsv(f,$('#csvReplace').checked); t.value='';}
 });
 form.addEventListener('click',e=>{
@@ -541,7 +541,7 @@ form.addEventListener('click',e=>{
 
 function shrink(file,max){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const img=new Image();img.onerror=rej;img.onload=()=>{
   const s=Math.min(1,max/Math.max(img.width,img.height));const cv=document.createElement('canvas');cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);
-  const ctx=cv.getContext('2d');ctx.drawImage(img,0,0,cv.width,cv.height);res(file.type==='image/png'&&max>1200?cv.toDataURL('image/png'):cv.toDataURL('image/jpeg',.84));};img.src=r.result;};r.readAsDataURL(file);});}
+  const ctx=cv.getContext('2d');ctx.drawImage(img,0,0,cv.width,cv.height);res(file.type==='image/png'&&max>1200?cv.toDataURL('image/png'):cv.toDataURL('image/jpeg',.9));};img.src=r.result;};r.readAsDataURL(file);});}
 
 /* ---------- CSV import ---------- */
 const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -728,7 +728,7 @@ function buildMap(){
   if(key===mapFor&&mapImg) return Promise.resolve();
   if(mapBuilding&&mapBuilding.key===key) return mapBuilding.p;
   const p=(async()=>{
-    const L=mapLayout(pts), K=2, Z=Math.min(Math.ceil(L.z+1),19), f=2**(L.z+1-Z), T=256*f;
+    const L=mapLayout(pts), K=3, Z=Math.min(Math.ceil(L.z+Math.log2(K)),19), f=2**(L.z+Math.log2(K)-Z), T=256*f;
     const cv=document.createElement('canvas'); cv.width=MW*K; cv.height=MH*K; const cx=cv.getContext('2d');
     cx.fillStyle='#EFEDE8'; cx.fillRect(0,0,cv.width,cv.height);
     const X0=L.x0*K, Y0=L.y0*K, n=2**Z, tiles=[];
@@ -756,7 +756,7 @@ function buildMap(){
         cx.lineWidth=(pt.kind==='active'?1.6:1.4)*K;cx.strokeStyle=pt.kind==='active'?'#0F0F0E':'#FFFFFF';cx.stroke();
       }
     });
-    mapImg=cv.toDataURL('image/jpeg',.9); mapFor=key;
+    mapImg=cv.toDataURL('image/jpeg',.93); mapFor=key;
   })();
   mapBuilding={key,p}; p.then(()=>{if(mapBuilding&&mapBuilding.key===key) mapBuilding=null; renderPages();},()=>{mapBuilding=null;});
   return p;
@@ -841,10 +841,10 @@ $('#savePdf').addEventListener('click',async()=>{
     const pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter',orientation:'portrait',compress:true});
     for(let i=0;i<pages.length;i++){
       btn.textContent=`Page ${i+1} of ${pages.length}…`;
-      const canvas=await html2canvas(pages[i],{scale:2.2,useCORS:true,backgroundColor:'#ffffff',logging:false,
+      const canvas=await html2canvas(pages[i],{scale:3,useCORS:true,backgroundColor:'#ffffff',logging:false,
         onclone:doc=>{doc.querySelectorAll('.page').forEach(p=>p.style.transform='none');doc.querySelectorAll('.pagewrap').forEach(w=>{w.style.width='816px';w.style.height='1056px';});}});
       if(i) pdf.addPage('letter','portrait');
-      pdf.addImage(canvas.toDataURL('image/jpeg',.92),'JPEG',0,0,612,792);
+      pdf.addImage(canvas.toDataURL('image/jpeg',.95),'JPEG',0,0,612,792);
     }
     await offer(`CMA - ${safeName(S.cover.address)}.pdf`,pdf.output('blob'));
   }catch(e){toast('The PDF could not be built. Try removing very large photos.');}
