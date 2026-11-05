@@ -832,11 +832,31 @@ function offer(filename,data){
   catch(e){toast('That file could not be saved. Try another browser.');return false;}
 }
 const safeName=s=>(s||'CMA').replace(/[\\/:*?"<>|]+/g,'').trim();
+
+/* The PDF tool blurs CSS background photos, so before saving, each photo is
+   cropped at print resolution and swapped in as a plain image. */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+async function sharpenPhotos(scope){
+  const els=[...scope.querySelectorAll('.page [style*="background-image"]')];
+  for(const el of els){
+    const m=el.style.backgroundImage.match(/url\(["']?(.+?)["']?\)/); if(!m) continue;
+    const w=el.offsetWidth,h=el.offsetHeight; if(!w||!h) continue;
+    let img; try{img=await loadImg(m[1]);}catch(e){continue;}
+    const K=3,cw=Math.round(w*K),ch=Math.round(h*K),s=Math.max(cw/img.naturalWidth,ch/img.naturalHeight);
+    const sw=cw/s,sh=ch/s,cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
+    const cx=cv.getContext('2d');cx.imageSmoothingQuality='high';cx.drawImage(img,(img.naturalWidth-sw)/2,(img.naturalHeight-sh)/2,sw,sh,0,0,cw,ch);
+    const im=document.createElement('img');im.alt='';im.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block';
+    try{im.src=cv.toDataURL('image/jpeg',.93);}catch(e){continue;}
+    try{await im.decode();}catch(e){}
+    if(getComputedStyle(el).position==='static') el.style.position='relative';
+    el.style.backgroundImage='none'; el.insertBefore(im,el.firstChild);
+  }
+}
 $('#savePdf').addEventListener('click',async()=>{
   const btn=$('#savePdf');if(!window.html2canvas||!window.jspdf){toast('The PDF tools did not load. Reload the page and try again.');return;}
   btn.disabled=true;const label=btn.textContent;
   try{
-    clearTimeout(renderT);if(mapBlock()){btn.textContent='Drawing map…';await buildMap();}renderPages();await document.fonts.ready;
+    clearTimeout(renderT);if(mapBlock()){btn.textContent='Drawing map…';await buildMap();}renderPages();await document.fonts.ready;btn.textContent='Preparing photos…';await sharpenPhotos(root);
     const pages=[...root.querySelectorAll('.page')];
     const pdf=new window.jspdf.jsPDF({unit:'pt',format:'letter',orientation:'portrait',compress:true});
     for(let i=0;i<pages.length;i++){
@@ -848,7 +868,7 @@ $('#savePdf').addEventListener('click',async()=>{
     }
     await offer(`CMA - ${safeName(S.cover.address)}.pdf`,pdf.output('blob'));
   }catch(e){toast('The PDF could not be built. Try removing very large photos.');}
-  btn.disabled=false;btn.textContent=label;
+  btn.disabled=false;btn.textContent=label;renderPages();
 });
 $('#saveDraft').addEventListener('click',()=>offer(`CMA draft - ${safeName(S.cover.address)}.json`,JSON.stringify(S)));
 $('#openDraft').addEventListener('click',()=>$('#draftFile').click());
